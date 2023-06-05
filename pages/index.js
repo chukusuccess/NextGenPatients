@@ -4,9 +4,52 @@ import Link from "next/link";
 import Splash from "@/components/Splash-Screen/Splash";
 import landingPageImg from "../public/landingPage.svg";
 import stetoscopeImg from "../public/stetoscope.svg";
-import { FaArrowDown } from "react-icons/fa";
+import { FaArrowDown, FaArrowRight, FaMoon, FaSun } from "react-icons/fa";
+import { useTheme } from "next-themes";
+import { useEffect, useState } from "react";
 
 export default function Home() {
+  const { systemTheme, theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const renderThemeToggler = () => {
+    if (!mounted) return null;
+
+    const currentTheme = theme === "system" ? systemTheme : theme;
+
+    if (currentTheme === "dark") {
+      return (
+        <button
+          title="Toggle theme"
+          onClick={(e) => {
+            e.preventDefault();
+            setTheme("light");
+          }}
+          className="absolute top-10 mx-auto w-10 h-10 text-2xl dark:text-white rounded-full flex justify-center"
+        >
+          <FaSun />
+        </button>
+      );
+    } else {
+      return (
+        <button
+          title="Toggle theme"
+          onClick={(e) => {
+            e.preventDefault();
+            setTheme("dark");
+          }}
+          className="absolute top-10 mx-auto w-10 h-10 text-2xl flex justify-center rounded-full"
+        >
+          <FaMoon />
+        </button>
+      );
+    }
+  };
+
   return (
     <>
       <Head>
@@ -19,11 +62,13 @@ export default function Home() {
         <Splash />
         <section className="flex flex-col w-full min-h-screen gap-12 xl:gap-10">
           <div className="relative flex flex-col xl:gap-6 items-center justify-center h-[100dvh] xl:flex-row-reverse px-4 xl:px-8">
+            {renderThemeToggler()}
+
             <div className="relative w-4/5 aspect-square xl:basis-1/2">
               <Image src={landingPageImg} fill priority alt="Landing Img" />
             </div>
 
-            <div className="flex flex-col space-y-6 xl:basis-1/2 text-black dark:text-white">
+            <div className="flex flex-col space-y-6 text-black xl:basis-1/2 dark:text-white">
               <h1 className="w-full text-4xl text-center xl:text-6xl xl:text-left">
                 Get Medical Consultation from Home
               </h1>
@@ -43,18 +88,18 @@ export default function Home() {
                 </Link>
                 <Link
                   href="/login"
-                  className="px-2 py-3 w-1/2 border border-[#2a9988] bg-[#2a9988] hover:bg-[#1C665B] dark:bg-transparent dark:hover:bg-[#1C665B] duration-500 rounded-full text-white text-xl max-w-[250px] text-center"
+                  className="flex gap-2 items-center justify-center px-2 py-3 w-1/2 border border-[#2a9988] bg-[#2a9988] hover:bg-[#1C665B] dark:bg-transparent dark:hover:bg-[#1C665B] duration-500 rounded-full text-white text-xl max-w-[250px]"
                 >
-                  Login
+                  Login <FaArrowRight />
                 </Link>
               </div>
             </div>
 
             <a
               href="#faq"
-              className="mt-10 mx-auto xl:absolute bottom-20 animate-bounce"
+              className="mx-auto mt-10 xl:absolute bottom-20 animate-bounce"
             >
-              <FaArrowDown className="dark:text-white text-4xl" />
+              <FaArrowDown className="text-4xl dark:text-white" />
             </a>
           </div>
 
