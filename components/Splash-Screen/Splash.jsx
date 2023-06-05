@@ -11,7 +11,9 @@ function Splash() {
       }}
       className="absolute top-0 z-50 flex items-center justify-center w-screen h-screen overflow-hidden bg-[#2A9988]"
     >
-      <SplashText />
+      <div data-testid="splash-txt">
+        <SplashText />
+      </div>
     </motion.div>
   );
 }
