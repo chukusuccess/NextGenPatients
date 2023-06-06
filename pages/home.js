@@ -20,10 +20,9 @@ const Home = () => {
 
   const doctorsArray = doctorsDummyData.doctors;
 
-  const dbID = process.env.DATABASE_ID;
-  const collID = process.env.COLLECTION_ID;
-
   useEffect(() => {
+    const dbID = process.env.DATABASE_ID;
+    const collID = process.env.COLLECTION_ID;
     const promise = databaseClient.listDocuments(dbID, collID);
     promise.then(
       function (response) {
