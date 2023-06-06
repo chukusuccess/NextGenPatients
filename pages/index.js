@@ -30,7 +30,7 @@ export default function Home() {
             e.preventDefault();
             setTheme("light");
           }}
-          className="absolute top-10 mx-auto w-10 h-10 text-2xl dark:text-white rounded-full flex justify-center"
+          className="absolute flex justify-center w-10 h-10 mx-auto text-2xl rounded-full top-10 dark:text-white"
         >
           <FaSun />
         </button>
@@ -43,7 +43,7 @@ export default function Home() {
             e.preventDefault();
             setTheme("dark");
           }}
-          className="absolute top-10 mx-auto w-10 h-10 text-2xl flex justify-center rounded-full"
+          className="absolute flex justify-center w-10 h-10 mx-auto text-2xl rounded-full top-10"
         >
           <FaMoon />
         </button>
@@ -69,7 +69,7 @@ export default function Home() {
               <Image src={landingPageImg} fill priority alt="Landing Img" />
             </div>
 
-            <div className="flex flex-col space-y-6 text-black xl:basis-1/2 dark:text-white">
+            <div className="flex flex-col text-black space-y-6 xl:basis-1/2 dark:text-white">
               <h1 className="w-full text-4xl text-center xl:text-6xl xl:text-left">
                 Get Medical Consultation from Home
               </h1>
@@ -138,7 +138,7 @@ export default function Home() {
 
             <br />
 
-            <ul className="z-10 grid grid-cols-1 gap-10 px-5 md:grid-cols-2 xl:grid-cols-3 sm:px-20 ">
+            <ul className="z-10 px-5 grid grid-cols-1 gap-10 md:grid-cols-2 xl:grid-cols-3 sm:px-20 ">
               <div className="space-y-1">
                 <li className="text-xl">
                   How do I sign up for an online medical consultation?

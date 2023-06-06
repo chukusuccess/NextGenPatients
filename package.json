@@ -10,6 +10,7 @@
     "test": "jest --env=jsdom"
   },
   "dependencies": {
+    "appwrite": "^11.0.0",
     "autoprefixer": "10.4.14",
     "eslint": "8.42.0",
     "eslint-config-next": "13.4.4",

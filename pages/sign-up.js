@@ -6,6 +6,8 @@ import { useRouter } from "next/router";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import { FaArrowLeft, FaMoon, FaSun } from "react-icons/fa";
+import { client } from "@/appWrite-client/settings.config";
+import { Account, ID } from "appwrite";
 
 const SignUp = () => {
   const [firstName, setFirstName] = useState("");
@@ -16,6 +18,25 @@ const SignUp = () => {
   const { systemTheme, theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const router = useRouter();
+
+  const handleSignup = (e) => {
+    e.preventDefault();
+    setErrorMessage("");
+
+    const account = new Account(client);
+
+    const promise = account.create(ID.unique(), email, password);
+
+    promise.then(
+      function (response) {
+        console.log(response);
+      },
+      function (error) {
+        console.log(error);
+        setErrorMessage(error.message);
+      }
+    );
+  };
 
   useEffect(() => {
     setMounted(true);
@@ -34,7 +55,7 @@ const SignUp = () => {
             e.preventDefault();
             setTheme("light");
           }}
-          className="xl:flex items-center justify-center w-10 h-10 text-2xl text-black rounded-full hidden"
+          className="items-center justify-center hidden w-10 h-10 text-2xl text-black rounded-full xl:flex"
         >
           <FaSun />
         </button>
@@ -47,7 +68,7 @@ const SignUp = () => {
             e.preventDefault();
             setTheme("dark");
           }}
-          className="xl:flex items-center justify-center w-10 h-10 text-2xl text-black rounded-full hidden"
+          className="items-center justify-center hidden w-10 h-10 text-2xl text-black rounded-full xl:flex"
         >
           <FaMoon />
         </button>
@@ -65,7 +86,10 @@ const SignUp = () => {
       </Head>
       <div className="w-screen min-h-[100dvh] flex relative">
         <section className="xl:basis-1/2 basis-full bg-[url('/loginPic.svg')] bg-cover"></section>
-        <form className="overflow-scroll xl:basis-1/2 w-full h-full backdrop-blur-xl absolute xl:static top-0">
+        <form
+          className="absolute top-0 w-full h-full overflow-scroll xl:basis-1/2 backdrop-blur-xl xl:static"
+          onSubmit={(e) => handleSignup(e)}
+        >
           <div className="flex items-center justify-center w-full min-h-[100dvh]">
             <section className="border border-black allIL:border-none bg-white w-[90%] max-w-[450px] flex flex-col gap-5 p-5 pb-6 rounded-xl text-black my-10">
               <div className="flex justify-between">
@@ -74,7 +98,7 @@ const SignUp = () => {
                     e.preventDefault();
                     router.back();
                   }}
-                  className="flex items-center gap-2 text-lg"
+                  className="flex items-center text-lg gap-2"
                 >
                   <FaArrowLeft /> back
                 </button>
@@ -141,7 +165,9 @@ const SignUp = () => {
                 />
               </label>
 
-              {errorMessage && <p className="text-red-600">{errorMessage}</p>}
+              {errorMessage && (
+                <p className="text-red-600 text-center">{errorMessage}</p>
+              )}
 
               <p className="text-center xs:text-xs">
                 Already have an account?&nbsp;
@@ -151,7 +177,7 @@ const SignUp = () => {
               </p>
 
               <button
-                className="py-3 text-white duration-500 bg-black border rounded-full hover:bg-transparent hover:text-black hover:border-black"
+                className="py-3 text-white bg-black border rounded-full duration-500 hover:bg-transparent hover:text-black hover:border-black"
                 type="submit"
               >
                 Continue
