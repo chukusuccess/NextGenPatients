@@ -1,0 +1,124 @@
+{
+    "specialists" : [
+        {
+            "id": 1,
+            "imgSrc": "/docPic3.svg",
+            "type": "Physician",
+            "link": "/specialists/1"
+        },
+        {
+            "id": 2,
+            "imgSrc": "/docPic2.svg",
+            "type": "Audiologist",
+            "link": "/specialists/2"
+        },
+        {
+            "id": 3,
+            "imgSrc": "/docPic1.svg",
+            "type": "Cardiologist",
+            "link": "/specialists/3"
+        },
+        {
+            "id": 4,
+            "imgSrc": "/docPic4.svg",
+            "type": "Diabetologist",
+            "link": "/specialists/4"
+        },
+        {
+            "id": 5,
+            "imgSrc": "/docPic5.svg",
+            "type": "Dietitian",
+            "link": "/specialists/5"
+        },
+        {
+            "id": 6,
+            "imgSrc": "/docPic6.svg",
+            "type": "Nurse",
+            "link": "/specialists/6"
+        },
+        {
+            "id": 7,
+            "imgSrc": "/docPic7.svg",
+            "type": "Orthoptist",
+            "link": "/specialists/7"
+        },
+        {
+            "id": 8,
+            "imgSrc": "/docPic3.svg",
+            "type": "Pathologist",
+            "link": "/specialists/8"
+        },
+        {
+            "id": 9,
+            "imgSrc": "/docPic5.svg",
+            "type": "Pharmacist",
+            "link": "/specialists/9"
+        },
+        {
+            "id": 10,
+            "imgSrc": "/docPic2.svg",
+            "type": "Therapist",
+            "link": "/specialists/10"
+        },
+        {
+            "id": 11,
+            "imgSrc": "/docPic4.svg",
+            "type": "Dentist",
+            "link": "/specialists/11"
+        },
+        {
+            "id": 12,
+            "imgSrc": "/docPic1.svg",
+            "type": "Gynecologist",
+            "link": "/specialists/12"
+        },
+        {
+            "id": 13,
+            "imgSrc": "/docPic7.svg",
+            "type": "Surgeon",
+            "link": "/specialists/13"
+        },
+        {
+            "id": 14,
+            "imgSrc": "/docPic6.svg",
+            "type": "Neurologist",
+            "link": "/specialists/14"
+        },
+        {
+            "id": 15,
+            "imgSrc": "/docPic4.svg",
+            "type": "Otolaryngologist",
+            "link": "/specialists/15"
+        },
+        {
+            "id": 16,
+            "imgSrc": "/docPic2.svg",
+            "type": "Optometrist",
+            "link": "/specialists/16"
+        },
+        {
+            "id": 17,
+            "imgSrc": "/docPic6.svg",
+            "type": "Orthopedist",
+            "link": "/specialists/17"
+        },
+        {
+            "id": 18,
+            "imgSrc": "/docPic5.svg",
+            "type": "X-ray",
+            "link": "/specialists/18"
+        },
+        {
+            "id": 19,
+            "imgSrc": "/docPic1.svg",
+            "type": "Urologist",
+            "link": "/specialists/19"
+        },
+        {
+            "id": 20,
+            "imgSrc": "/docPic7.svg",
+            "type": "Hepatologist",
+            "link": "/specialists/20"
+        }
+    ]
+}

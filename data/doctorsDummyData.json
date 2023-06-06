@@ -1,0 +1,64 @@
+{
+  "doctors": [
+    {
+      "id": 1,
+      "profilePic": "/doc1.jpg",
+      "name": "Dr. Adeola Ogunmola",
+      "degrees": "M.Sc., Ph.D., Dr."
+    },
+    {
+      "id": 2,
+      "profilePic": "/doc2.jpg",
+      "name": "Dr. Chinwe Adigwe",
+      "degrees": "M.Sc., Dr."
+    },
+    {
+      "id": 3,
+      "profilePic": "/doc3.jpg",
+      "name": "Dr. Emeka Nwokocha",
+      "degrees": "M.Sc., Ph.D."
+    },
+    {
+      "id": 4,
+      "profilePic": "/doc4.jpg",
+      "name": "Dr. Fatima Ibrahim",
+      "degrees": "M.Sc., Ph.D., Dr."
+    },
+    {
+      "id": 5,
+      "profilePic": "/doc5.jpg",
+      "name": "Dr. Gabriel Adewale",
+      "degrees": "M.Sc., Dr."
+    },
+    {
+      "id": 6,
+      "profilePic": "/doc6.jpg",
+      "name": "Dr. Halima Bello",
+      "degrees": "M.Sc., Ph.D."
+    },
+    {
+      "id": 7,
+      "profilePic": "/doc7.jpg",
+      "name": "Dr. Ibrahim Adeleke",
+      "degrees": "M.Sc., Ph.D., Dr."
+    },
+    {
+      "id": 8,
+      "profilePic": "/doc8.svg",
+      "name": "Dr. Joyce Oyebade",
+      "degrees": "M.Sc., Dr."
+    },
+    {
+      "id": 9,
+      "profilePic": "/doc9.svg",
+      "name": "Dr. Kemi Adetunji",
+      "degrees": "M.Sc., Ph.D."
+    },
+    {
+      "id": 10,
+      "profilePic": "/doc1.jpg",
+      "name": "Dr. Lekan Akande",
+      "degrees": "M.Sc., Ph.D., Dr."
+    }
+  ]
+}
