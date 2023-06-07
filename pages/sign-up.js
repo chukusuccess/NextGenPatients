@@ -28,6 +28,9 @@ const SignUp = () => {
     promise.then(
       function (response) {
         console.log(response);
+        router.push({
+          pathname: "/login",
+        });
       },
       function (error) {
         console.log(error);

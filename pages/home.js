@@ -6,7 +6,7 @@ import { Input, Carousel } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import doctorsDummyData from "/data/doctorsDummyData.json";
 import { databaseClient } from "@/appWrite-client/settings.config";
-// import Nav from "@/components/Nav";
+import Nav from "@/components/Nav";
 import { EditOutlined } from "@ant-design/icons";
 import { useRouter } from "next/router";
 // import useStore from "@/providers/appStore";
@@ -418,7 +418,7 @@ const Home = () => {
           </div>
         </div>
       </div>
-      {/* <Nav /> */}
+      <Nav />
     </>
   );
 };
