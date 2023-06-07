@@ -6,8 +6,7 @@ import { useRouter } from "next/router";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import { FaArrowLeft, FaMoon, FaSun } from "react-icons/fa";
-import { client } from "@/appWrite-client/settings.config";
-import { Account } from "appwrite";
+import { accountClient } from "@/appWrite-client/settings.config";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -21,13 +20,15 @@ const Login = () => {
     e.preventDefault();
     setErrorMessage("");
 
-    const account = new Account(client);
-
-    const promise = account.createEmailSession(email, password);
+    const promise = accountClient.createEmailSession(email, password);
 
     promise.then(
       function (response) {
         console.log(response);
+        router.push({
+          pathname: "/home",
+          query: { firstName: response.deviceModel },
+        });
       },
       function (error) {
         console.log(error);

@@ -6,8 +6,8 @@ import { useRouter } from "next/router";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import { FaArrowLeft, FaMoon, FaSun } from "react-icons/fa";
-import { client } from "@/appWrite-client/settings.config";
-import { Account, ID } from "appwrite";
+import { accountClient } from "@/appWrite-client/settings.config";
+import { ID } from "appwrite";
 
 const SignUp = () => {
   const [firstName, setFirstName] = useState("");
@@ -23,9 +23,7 @@ const SignUp = () => {
     e.preventDefault();
     setErrorMessage("");
 
-    const account = new Account(client);
-
-    const promise = account.create(ID.unique(), email, password);
+    const promise = accountClient.create(ID.unique(), email, password);
 
     promise.then(
       function (response) {
