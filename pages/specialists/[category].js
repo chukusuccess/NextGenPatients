@@ -53,14 +53,13 @@ export default function Category({ specialist }) {
                           <Image
                             fill
                             src={data.profilePic}
-                            priority
                             alt="ProfilePic"
                             className="rounded-full"
                           />
                         </div>
                         <div>
-                          <h1 className="text-2xl">{data.name}</h1>
-                          <p className="text-lg">{data.degrees}</p>
+                          <h1 className="text-2xl text-black">{data.name}</h1>
+                          <p className="text-lg text-black">{data.degrees}</p>
                         </div>
                       </div>
                     </div>

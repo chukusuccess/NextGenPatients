@@ -14,6 +14,7 @@ import { useRouter } from "next/router";
 
 const Home = () => {
   const [value, setValue] = useState([]);
+  const [originalData, setOriginalData] = useState([]);
   const [searchField, setSearchField] = useState("");
   const [name, setName] = useState();
   const router = useRouter();
@@ -42,6 +43,7 @@ const Home = () => {
     promise.then(
       function (response) {
         setValue(response.documents);
+        setOriginalData(response.documents);
       },
       function (error) {
         console.log(error);
@@ -51,11 +53,16 @@ const Home = () => {
 
   const onSearch = (e) => {
     setSearchField(e.target.value);
-    const filterData = value
-      .map((data) => data)
-      .filter(function (data) {
-        return data.type.toLowerCase().includes(e.target.value.toLowerCase());
-      });
+
+    if (e.target.value.length <= 0) {
+      setValue(originalData);
+      return null;
+    }
+
+    const filterData = originalData.filter((data) => {
+      return data.type.toLowerCase().includes(e.target.value.toLowerCase());
+    });
+
     setValue(filterData);
   };
 
@@ -318,41 +325,46 @@ const Home = () => {
           ) : (
             ""
           )}
-          <div className="hidden w-full pt-20 md:hidden lg:flex">
-            <div className="text-white w-full bg-[#2A9988] rounded-xl relative flex flex-row">
-              <div className="flex flex-col items-start justify-start w-1/2 gap-5 py-8 pl-10">
-                <h1 className="text-5xl font-semibold">
-                  Learn how to stay Healthy from these tips!
-                </h1>
-                <ul className="text-2xl ">
-                  <li>• Eat plenty of fruits daily</li>
-                  <li>• Drink enough water daily</li>
-                  <li>• Exercise regularly everyday</li>
-                  <li>• Avoid smoking...</li>
-                </ul>
-                <Link
-                  href={"/appointments"}
-                  className="px-8 py-2 rounded-xl text-2xl bg-[#3EE5CC]"
-                >
-                  Get consultation
-                </Link>
+          {searchField === "" ? (
+            <div className="hidden w-full pt-20 md:hidden lg:flex">
+              <div className="text-white w-full bg-[#2A9988] rounded-xl relative flex flex-row">
+                <div className="flex flex-col items-start justify-start w-1/2 gap-5 py-8 pl-10">
+                  <h1 className="text-5xl font-semibold">
+                    Learn how to stay Healthy from these tips!
+                  </h1>
+                  <ul className="text-2xl ">
+                    <li>• Eat plenty of fruits daily</li>
+                    <li>• Drink enough water daily</li>
+                    <li>• Exercise regularly everyday</li>
+                    <li>• Avoid smoking...</li>
+                  </ul>
+                  <Link
+                    href={"/appointments"}
+                    className="px-8 py-2 rounded-xl text-2xl bg-[#3EE5CC]"
+                  >
+                    Get consultation
+                  </Link>
+                </div>
+                <Image
+                  width={400}
+                  height={50}
+                  className="absolute bottom-0 z-20 overflow-visible right-40"
+                  src="/doctorLg.png"
+                  alt="doctor"
+                />
+                <Image
+                  width={300}
+                  height={50}
+                  className="absolute bottom-0 right-0 z-10"
+                  src="/doctorWomanLg.png"
+                  alt="doctor"
+                />
               </div>
-              <Image
-                width={400}
-                height={50}
-                className="absolute bottom-0 z-20 overflow-visible right-40"
-                src="/doctorLg.png"
-                alt="doctor"
-              />
-              <Image
-                width={300}
-                height={50}
-                className="absolute bottom-0 right-0 z-10"
-                src="/doctorWomanLg.png"
-                alt="doctor"
-              />
             </div>
-          </div>
+          ) : (
+            ""
+          )}
+
           <br />
           <div className="flex flex-col w-full gap-3 mt-0 lg:gap-10 lg:mt-10">
             <h1
@@ -374,17 +386,15 @@ const Home = () => {
                   </Link>
                 );
               })}
-              {
-                <div className="flex flex-col items-center justify-between pt-2">
-                  <Link
-                    href={"/specialists"}
-                    className="flex flex-col items-center justify-center max-w-full text-2xl font-bold rounded-full shadow-lg dark:bg-white dark:text-black w-14 aspect-square lg:w-24"
-                  >
-                    +
-                  </Link>
-                  <p className="text-xs lg:text-lg">More</p>
-                </div>
-              }
+              <div className="flex flex-col items-center justify-between pt-2">
+                <Link
+                  href={"/specialists"}
+                  className="flex flex-col items-center justify-center max-w-full text-2xl font-bold rounded-full shadow-lg dark:bg-white dark:text-black w-14 aspect-square lg:w-24"
+                >
+                  +
+                </Link>
+                <p className="text-xs lg:text-lg">More</p>
+              </div>
             </div>
           </div>
         </div>

@@ -187,7 +187,7 @@ const SignUp = () => {
                 type="submit"
               >
                 {loading
-                  ? "Logging in..."
+                  ? "Signing up..."
                   : errorMessage
                   ? "Retry"
                   : "Continue"}
