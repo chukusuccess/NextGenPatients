@@ -1,22 +1,22 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import Head from "next/head";
-import { Input, Carousel } from "antd";
+import { Input, Carousel, message } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import doctorsDummyData from "/data/doctorsDummyData.json";
 import { databaseClient } from "@/appWrite-client/settings.config";
 import Nav from "@/components/Nav";
 import { EditOutlined } from "@ant-design/icons";
+import { accountClient } from "@/appWrite-client/settings.config";
 import { useRouter } from "next/router";
-// import useStore from "@/providers/appStore";
 
 const Home = () => {
   const [value, setValue] = useState([]);
   const [searchField, setSearchField] = useState("");
-  const name = ", Welcome";
+  const [name, setName] = useState();
   const router = useRouter();
-  const firstName = router.query.firstName;
 
   const doctorsArray = doctorsDummyData.doctors;
 
@@ -25,6 +25,19 @@ const Home = () => {
     process.env.COLLECTION_ID || process.env.NEXT_PUBLIC_COLLECTION_ID;
 
   useEffect(() => {
+    const userDetails = accountClient.get();
+
+    userDetails.then(
+      function (response) {
+        setName(response.name.split(" ")[0]);
+      },
+      function (error) {
+        message.error("Oops you're not logged in :(");
+        router.push("/login");
+        return;
+      }
+    );
+
     const promise = databaseClient.listDocuments(dbID, collID);
     promise.then(
       function (response) {
@@ -74,9 +87,7 @@ const Home = () => {
             <div>
               <h1 className="text-xl font-semibold dark:text-white sm:text-3xl">
                 Hi
-                <span className="text-[#2A9988]">
-                  {firstName ? " " + firstName + name : name}
-                </span>
+                <span className="text-[#2A9988]">{", " + name}</span>
               </h1>
             </div>
             <div className="flex flex-row gap-5 lg:gap-5">
@@ -118,7 +129,7 @@ const Home = () => {
               onChange={(e) => onSearch(e)}
               prefix={prefix}
               placeholder="Search for Doctors"
-              className="w-full px-4 text-xl border border-green-600 rounded-lg lg:w-2/3 md:w-2/3 sm:p-4 sm:px-4 searchDoc"
+              className="w-full px-4 text-lg border border-green-600 rounded-lg lg:w-2/3 md:w-2/3 sm:p-4 sm:px-4 searchDoc"
             />
           </div>
           {searchField === "" ? (
@@ -353,7 +364,7 @@ const Home = () => {
             <div className="grid grid-cols-4 text-black gap-x-2 gap-y-6 h-fit lg:grid-cols-6 md:gap-6 lg:gap-8 xl:gap-10 dark:text-white">
               {value.slice(0, 7).map((data) => {
                 return (
-                  <Link href={data.link} key={data.id}>
+                  <Link href={data.link} key={data.$id}>
                     <div className="flex flex-col items-center justify-center">
                       <div className="relative w-20 h-20 max-w-full lg:w-36 lg:h-32">
                         <Image fill src={data.imgSrc} alt="docPic" />
