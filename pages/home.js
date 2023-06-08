@@ -47,8 +47,6 @@ const Home = () => {
         console.log(error);
       }
     );
-
-    // eslint-disable-next-line
   }, []);
 
   const onSearch = (e) => {

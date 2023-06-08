@@ -5,52 +5,10 @@ import Link from "next/link";
 import Splash from "@/components/Splash-Screen/Splash";
 import landingPageImg from "../public/landingPage.svg";
 import stetoscopeImg from "../public/stetoscope.svg";
-import { FaArrowDown, FaArrowRight, FaMoon, FaSun } from "react-icons/fa";
-import { useTheme } from "next-themes";
-import { useEffect, useState } from "react";
+import { FaArrowDown, FaArrowRight } from "react-icons/fa";
+import RenderThemeToggler from "@/components/UI/RenderThemeToggler";
 
 export default function Home() {
-  const { systemTheme, theme, setTheme } = useTheme();
-  const [mounted, setMounted] = useState();
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  const renderThemeToggler = () => {
-    if (!mounted) return null;
-
-    const currentTheme = theme === "system" ? systemTheme : theme;
-
-    if (currentTheme === "dark") {
-      return (
-        <button
-          title="Toggle theme"
-          onClick={(e) => {
-            e.preventDefault();
-            setTheme("light");
-          }}
-          className="absolute flex justify-center w-10 h-10 mx-auto text-2xl rounded-full top-10 dark:text-white"
-        >
-          <FaSun />
-        </button>
-      );
-    } else {
-      return (
-        <button
-          title="Toggle theme"
-          onClick={(e) => {
-            e.preventDefault();
-            setTheme("dark");
-          }}
-          className="absolute flex justify-center w-10 h-10 mx-auto text-2xl rounded-full top-10"
-        >
-          <FaMoon />
-        </button>
-      );
-    }
-  };
-
   return (
     <>
       <Head>
@@ -66,13 +24,13 @@ export default function Home() {
         <Splash />
         <section className="flex flex-col w-full min-h-screen gap-12 xl:gap-10">
           <div className="relative flex flex-col xl:gap-6 items-center justify-center h-[100dvh] xl:flex-row-reverse px-4 xl:px-8">
-            {renderThemeToggler()}
+            <RenderThemeToggler />
 
             <div className="relative w-4/5 aspect-square xl:basis-1/2">
               <Image src={landingPageImg} fill priority alt="Landing Img" />
             </div>
 
-            <div className="flex flex-col text-black space-y-6 xl:basis-1/2 dark:text-white">
+            <div className="flex flex-col space-y-6 text-black xl:basis-1/2 dark:text-white">
               <h1 className="w-full text-4xl text-center xl:text-6xl xl:text-left">
                 Get Medical Consultation from Home
               </h1>
@@ -141,7 +99,7 @@ export default function Home() {
 
             <br />
 
-            <ul className="z-10 px-5 grid grid-cols-1 gap-10 md:grid-cols-2 xl:grid-cols-3 sm:px-20 ">
+            <ul className="z-10 grid grid-cols-1 gap-10 px-5 md:grid-cols-2 xl:grid-cols-3 sm:px-20 ">
               <div className="space-y-1">
                 <li className="text-xl">
                   How do I sign up for an online medical consultation?

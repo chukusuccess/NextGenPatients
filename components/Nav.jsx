@@ -1,21 +1,18 @@
-/* eslint-disable react-hooks/exhaustive-deps */ // Disable warnings related to React hooks dependency arrays
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { EditOutlined } from "@ant-design/icons";
 import useNavigationBar from "./hooks/useNavigationBar";
-// import useStore from "@/providers/appStore";
 import { useRouter } from "next/router";
-// import { auth, db } from "@/firebase/client";
-// import { collection, getDocs } from "firebase/firestore";
+import RenderThemeToggler from "./UI/RenderThemeToggler";
+import RenderCloseImage from "./UI/RenderCloseImage";
+import { accountClient } from "@/appWrite-client/settings.config";
 
 function Nav() {
   const [navMenu, openMenu, closeMenu] = useNavigationBar(); // Get navigation bar state and functions for opening/closing the menu
   const [arrayUsed, setArrayUsed] = useState([]); // Define state for storing array of upcoming appointments
-  const [dark, toggleDark] = useState(); // Get state and function for toggling dark mode
-  const router = useRouter(); // Get Next.js router instance
-
-  // Define array of links
+  const router = useRouter();
   const links = [
     {
       id: 1,
@@ -43,57 +40,32 @@ function Nav() {
     },
   ];
 
-  // Define function for loading user's upcoming appointments from Firestore
-  const handleLoad = async () => {
-    // const user = auth.currentUser; // Get the currently authenticated user
-
-    // try {
-    //   if (user) {
-    //     // If there is a user
-    //     const uid = user.uid; // Get their UID
-
-    //     // Query the Firestore collection for the user's upcoming appointments
-    //     const upcomingQuerySnapshot = await getDocs(
-    //       collection(db, "users", uid, "upcoming-appointments")
-    //     );
-
-    //     // Map the query snapshot to an array of appointment objects, including the document ID
-    //     const upcomingAppointmentsData = upcomingQuerySnapshot.docs.map(
-    //       (doc) => ({ ...doc.data(), id: doc.id })
-    //     );
-
-    //     setArrayUsed(upcomingAppointmentsData); // Store the array in state
-    //   } else {
-    //     // If there is no user
-    //     alert("Oops! You're not logged in."); // Alert the user
-    //     router.push("/login"); // Redirect to the login page
-    //   }
-    // } catch (error) {
-    //   console.log(error.message); // Log any errors
-    // }
-    console.log("handle load");
-  };
+  // Define function for loading user's upcoming appointments from AppWrite
+  const handleLoad = async () => {};
 
   useEffect(() => {
-    handleLoad(); // Load the user's upcoming appointments when the component mounts
+    handleLoad();
   }, []);
 
-  // Define function for transitioning to the appointments page
+  // Function for transitioning to the appointments page
   const handleTransition = () => {
     if (navMenu) {
       // If the menu is open
-      closeMenu(); // Close it
+      closeMenu();
     }
-    router.push("/appointments"); // Transition to the appointments page
+    router.push("/appointments");
   };
 
-  // Define function for signing out
-  const handleSignOut = async () => {
+  // Function for logging out
+  const handleLogOut = () => {
     try {
-      await auth.signOut(); // Sign out the user
-      window.location.href = "/login"; // Redirect to the login page
+      const sessionDetails = accountClient.get();
+      sessionDetails.then(function () {
+        accountClient.deleteSession("current");
+        router.push("/login");
+      });
     } catch (error) {
-      alert("Error signing out", error); // Alert the user if there's an error
+      console.log("Error logging out", error.message);
     }
   };
 
@@ -127,22 +99,12 @@ function Nav() {
               </li>
             ))}
 
-            <button
-              title="Theme"
-              onClick={() => {
-                toggleDark();
-              }}
-              className="relative hidden xl:flex items-center justify-center w-6 aspect-square text-base text-[#2A9988] rounded-full"
-            >
-              {dark ? (
-                <Image fill src={"/light.svg"} alt="closeMenu" />
-              ) : (
-                <Image fill src={"/dark.svg"} alt="closeMenu" />
-              )}
-            </button>
+            <div className="hidden xl:block">
+              <RenderThemeToggler />
+            </div>
 
             <button
-              onClick={() => handleSignOut()}
+              onClick={() => handleLogOut()}
               className="hidden xl:flex items-center justify-center py-2 px-4 bg-white hover:bg-[#1C665B] text-[#2a9988] hover:text-white duration-500 rounded-lg shadow-lg"
             >
               Logout
@@ -159,7 +121,7 @@ function Nav() {
         </ul>
 
         <div
-          className={`flex flex-col gap-6 px-6 items-start justify-center text-base absolute bottom-0 h-screen w-full bg-[#F8FFFE] dark:bg-black xl:hidden duration-500 ${navMenu}`}
+          className={`flex flex-col gap-6 px-6 items-start justify-center text-base absolute bottom-0 h-screen w-full bg-[#F8FFFE] dark:bg-[#0e1217] xl:hidden duration-500 ${navMenu}`}
         >
           <div className="flex items-center justify-between w-full mt-24">
             <Link
@@ -169,41 +131,9 @@ function Nav() {
               <EditOutlined /> Edit Profile
             </Link>
 
-            <button
-              title="Theme"
-              onClick={() => {
-                toggleDark();
-              }}
-              className="relative flex items-center justify-center w-10 text-base text-black bg-black rounded-full aspect-square dark:text-white"
-            >
-              {dark ? (
-                <Image
-                  width={24}
-                  height={24}
-                  src={"/light.svg"}
-                  alt="closeMenu"
-                />
-              ) : (
-                <Image
-                  width={20}
-                  height={20}
-                  src={"/dark.svg"}
-                  alt="closeMenu"
-                />
-              )}
-            </button>
+            <RenderThemeToggler />
 
-            <button
-              title="Close navigation menu"
-              onClick={closeMenu}
-              className="relative w-6 text-lg dark:text-white aspect-square"
-            >
-              {dark ? (
-                <Image fill src={"/close.svg"} alt="closeMenu" />
-              ) : (
-                <Image fill src={"/closeCard.svg"} alt="closeMenu" />
-              )}
-            </button>
+            <RenderCloseImage closeMenu={closeMenu} />
           </div>
 
           <div className="relative w-full h-full pt-10 pb-8 overflow-hidden scrollbar-hide">
@@ -235,7 +165,7 @@ function Nav() {
                       </div>
                       <div className="flex items-center justify-between w-full p-4">
                         <div className="flex items-center gap-2">
-                          <div className="relative w-20 xl:w-32 aspect-square rounded-full overflow-hidden">
+                          <div className="relative w-20 overflow-hidden rounded-full xl:w-32 aspect-square">
                             <Image
                               fill
                               src={data.doc}
@@ -289,7 +219,7 @@ function Nav() {
               Book appointment
             </Link>
             <button
-              onClick={() => handleSignOut()}
+              onClick={() => handleLogOut()}
               className="flex w-1/2 sm:w-1/4 items-center justify-center text-sm gap-2 py-3 bg-[#2a9988] hover:bg-[#1C665B] text-white rounded-lg shadow-lg"
             >
               Logout

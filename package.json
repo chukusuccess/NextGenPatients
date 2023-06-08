@@ -10,6 +10,7 @@
     "test": "jest --env=jsdom"
   },
   "dependencies": {
+    "@emailjs/browser": "^3.11.0",
     "antd": "^5.5.2",
     "appwrite": "^11.0.0",
     "autoprefixer": "10.4.14",

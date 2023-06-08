@@ -14,24 +14,23 @@ const Login = () => {
   const [errorMessage, setErrorMessage] = useState(null);
   const { systemTheme, theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   const handleLogin = (e) => {
     e.preventDefault();
+    setLoading(true);
     setErrorMessage("");
 
     const promise = accountClient.createEmailSession(email, password);
 
     promise.then(
       function (response) {
-        console.log(response);
-        router.push({
-          pathname: "/home",
-          query: { firstName: response.deviceModel },
-        });
+        router.push("/home");
       },
       function (error) {
         console.log(error);
+        setLoading(false);
         setErrorMessage(error.message);
       }
     );
@@ -100,7 +99,7 @@ const Login = () => {
                     e.preventDefault();
                     router.back();
                   }}
-                  className="flex items-center text-lg gap-2"
+                  className="flex items-center gap-2 text-lg"
                 >
                   <FaArrowLeft /> back
                 </button>
@@ -137,7 +136,7 @@ const Login = () => {
               </label>
 
               {errorMessage && (
-                <p className="text-red-600 text-center">{errorMessage}</p>
+                <p className="text-center text-red-600">{errorMessage}</p>
               )}
 
               <p className="text-center xs:text-xs">
@@ -148,10 +147,14 @@ const Login = () => {
               </p>
 
               <button
-                className="py-3 text-white bg-black border rounded-full duration-500 hover:bg-transparent hover:text-black hover:border-black"
+                className="py-3 text-white duration-500 bg-black border rounded-full hover:bg-transparent hover:text-black hover:border-black"
                 type="submit"
               >
-                Continue
+                {loading
+                  ? "Logging in..."
+                  : errorMessage
+                  ? "Retry"
+                  : "Continue"}
               </button>
             </section>
           </div>
