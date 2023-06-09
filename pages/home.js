@@ -6,15 +6,19 @@ import Head from "next/head";
 import { Input, Carousel, message } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import doctorsDummyData from "/data/doctorsDummyData.json";
-import { databaseClient } from "@/appWrite-client/settings.config";
+import {
+  accountClient,
+  databaseClient,
+  storageClient,
+} from "@/appWrite-client/settings.config";
 import Nav from "@/components/Nav";
 import { EditOutlined } from "@ant-design/icons";
-import { accountClient } from "@/appWrite-client/settings.config";
 import { useRouter } from "next/router";
 
 const Home = () => {
   const [value, setValue] = useState([]);
   const [originalData, setOriginalData] = useState([]);
+  const [images, setImages] = useState([]);
   const [searchField, setSearchField] = useState("");
   const [name, setName] = useState();
   const router = useRouter();
@@ -24,6 +28,7 @@ const Home = () => {
   const dbID = process.env.DATABASE_ID || process.env.NEXT_PUBLIC_DATABASE_ID;
   const collID =
     process.env.COLLECTION_ID || process.env.NEXT_PUBLIC_COLLECTION_ID;
+  const bucketID = process.env.BUCKET_ID || process.env.NEXT_PUBLIC_BUCKET_ID;
 
   useEffect(() => {
     const userDetails = accountClient.get();
@@ -39,11 +44,22 @@ const Home = () => {
       }
     );
 
-    const promise = databaseClient.listDocuments(dbID, collID);
-    promise.then(
+    const database = databaseClient.listDocuments(dbID, collID);
+    database.then(
       function (response) {
         setValue(response.documents);
         setOriginalData(response.documents);
+      },
+      function (error) {
+        console.log(error);
+      }
+    );
+
+    const storage = storageClient.listFiles(bucketID);
+    storage.then(
+      function (response) {
+        console.log(response);
+        setImages(response.files)
       },
       function (error) {
         console.log(error);
@@ -419,7 +435,7 @@ const Home = () => {
                     key={data.id}
                     className="flex flex-row items-center justify-start py-3 bg-white w-72 rounded-xl"
                   >
-                    <div className="flex flex-col items-center justify-center w-2/5 p-2">
+                    <div className="relative flex flex-col items-center justify-center w-2/5 p-2">
                       <Image
                         className="rounded-full"
                         width={80}
