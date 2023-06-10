@@ -20,7 +20,7 @@ const Login = () => {
   const handleLogin = (e) => {
     e.preventDefault();
     setLoading(true);
-    setErrorMessage("");
+    setErrorMessage(""); 
 
     const promise = accountClient.createEmailSession(email, password);
 

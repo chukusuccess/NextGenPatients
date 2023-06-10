@@ -1,16 +1,33 @@
 import Head from "next/head";
 import Image from "next/image";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Nav from "@/components/Nav";
 import doctorsDummyData from "/data/doctorsDummyData.json";
 import specialistsDummy from "/data/specialistsDummyData.json";
 import { useRouter } from "next/router";
+import { storageClient } from "@/appWrite-client/settings.config";
 
 const specialistsArray = specialistsDummy.specialists;
 
 export default function Category({ specialist }) {
+  const [images, setImages] = useState(null);
   const doctorsArray = doctorsDummyData.doctors;
   const router = useRouter();
+
+  const bucketID = process.env.BUCKET_ID || process.env.NEXT_PUBLIC_BUCKET_ID;
+
+  useEffect(() => {
+    const storage = storageClient.listFiles(bucketID);
+    storage.then(
+      function (response) {
+        setImages(response.files);
+      },
+      function (error) {
+        console.log(error);
+      }
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <>
@@ -41,31 +58,37 @@ export default function Category({ specialist }) {
             <div
               className={`w-full h-full overflow-scroll grid grid-cols-1 md:grid-cols-2 gap-10 pb-12`}
             >
-              {doctorsArray.map((data) => {
-                return (
-                  <div
-                    className="flex flex-col w-full h-fit bg-[#FCFCFC] rounded-lg shadow-lg"
-                    key={data.id}
-                  >
-                    <div className="flex items-center justify-between w-full p-4">
-                      <div className="flex items-center gap-2">
-                        <div className="relative w-28 aspect-square">
-                          <Image
-                            fill
-                            src={data.profilePic}
-                            alt="ProfilePic"
-                            className="rounded-full"
-                          />
-                        </div>
-                        <div>
-                          <h1 className="text-2xl text-black">{data.name}</h1>
-                          <p className="text-lg text-black">{data.degrees}</p>
+              {images &&
+                doctorsArray.map((data, index) => {
+                  const imageURL = storageClient.getFilePreview(
+                    bucketID,
+                    images[index].$id
+                  );
+
+                  return (
+                    <div
+                      className="flex flex-col w-full h-fit bg-[#FCFCFC] rounded-lg shadow-lg"
+                      key={data.id}
+                    >
+                      <div className="flex items-center justify-between w-full p-4">
+                        <div className="flex items-center gap-2">
+                          <div className="relative w-28 aspect-square">
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img
+                              src={imageURL}
+                              alt="ProfilePic"
+                              className="rounded-full"
+                            />
+                          </div>
+                          <div>
+                            <h1 className="text-2xl text-black">{data.name}</h1>
+                            <p className="text-lg text-black">{data.degrees}</p>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                })}
             </div>
           </div>
         </div>

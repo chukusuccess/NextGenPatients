@@ -38,6 +38,12 @@ function Nav() {
       imgSrc: "/hospitals.svg",
       label: "Hospitals",
     },
+    {
+      id: 5,
+      link: "/aboutus",
+      imgSrc: "/aboutus.svg",
+      label: "About us",
+    },
   ];
 
   // Define function for loading user's upcoming appointments from AppWrite
@@ -59,9 +65,7 @@ function Nav() {
   // Function for logging out
   const handleLogOut = () => {
     try {
-      const sessionDetails = accountClient.get();
-      sessionDetails.then(function () {
-        accountClient.deleteSession("current");
+      accountClient.deleteSession("current").then(function () {
         router.push("/login");
       });
     } catch (error) {
