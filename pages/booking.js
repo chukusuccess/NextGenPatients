@@ -1,13 +1,18 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import Nav from "@/components/Nav";
-import React, { useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { states } from "@/data/arrays";
 import specialistsDummy from "/data/specialistsDummyData.json";
 import doctorsDummy from "/data/doctorsDummyData.json";
 import Head from "next/head";
 import { Ticket } from "@/components/Ticket/Ticket";
 import { useRouter } from "next/router";
-// import { auth, db } from "@/firebase/client";
-// import { collection, addDoc } from "firebase/firestore";
+import {
+  accountClient,
+  databaseClient,
+  storageClient,
+} from "@/appWrite-client/settings.config";
+import { ID } from "appwrite";
 
 function Booking() {
   const [fname, setFname] = useState("");
@@ -23,19 +28,34 @@ function Booking() {
   const [complaint, setComplaint] = useState("");
   const [appointmentDate, setAppointmentDate] = useState("");
   const [appointmentTime, setAppointmentTime] = useState("");
+  const [images, setImages] = useState(null);
   const [showConfirmation, setShowConfirmation] = useState(false);
 
   const specialistsArray = specialistsDummy.specialists;
   const doctorsArray = doctorsDummy.doctors;
   const router = useRouter();
 
+  const bucketID = process.env.BUCKET_ID || process.env.NEXT_PUBLIC_BUCKET_ID;
+
+  useEffect(() => {
+    const storage = storageClient.listFiles(bucketID);
+    storage.then(
+      function (response) {
+        setImages(response.files);
+      },
+      function (error) {
+        console.log(error);
+      }
+    );
+  }, []);
+
   const handleSubmit = async (event) => {
     event.preventDefault();
-    const user = auth?.currentUser;
+    const userDetails = await accountClient.get();
 
-    if (user) {
-      // user is signed in, get their UID
-      const uid = user.uid;
+    if (userDetails) {
+      // user is signed in, get their UID(email)
+      const uid = userDetails.email;
       const date = new Date();
 
       const day = String(date.getDate()).padStart(2, "0");
@@ -46,36 +66,13 @@ function Booking() {
       const minutes = date.getMinutes().toString().padStart(2, "0");
       const seconds = date.getSeconds().toString().padStart(2, "0");
 
-      const docs = [
-        "/doc1.jpg",
-        "/doc2.jpg",
-        "/doc3.jpg",
-        "/doc4.jpg",
-        "/doc5.jpg",
-        "/doc6.jpg",
-        "/doc7.jpg",
-        "/doc8.svg",
-        "/doc9.svg",
-      ];
-      const randomIndex = Math.floor(Math.random() * docs.length);
-      const randomPic = docs[randomIndex];
+      const randomIndex = Math.floor(Math.random() * images.length);
+      const randomPic = images[randomIndex];
 
-      // Create "upcoming-appointments" and "all-appointments" collections for the user
-      const upcomingAppointmentsRef = collection(
-        db,
-        "users",
-        uid,
-        "upcoming-appointments"
-      );
-
-      const allAppointmentsRef = collection(
-        db,
-        "users",
-        uid,
-        "all-appointments"
-      );
+      const docId = ID.unique();
 
       const appointmentDetails = {
+        identification: uid,
         dateOfBooking: `${day}/${month}/${year}`,
         timeOfBooking: `${hours}:${minutes}:${seconds}`,
         firstName: fname,
@@ -94,27 +91,44 @@ function Booking() {
         qrString: fname + lname + appointmentTime,
       };
 
+      const databaseId =
+        process.env.USERS_DATABASE_ID ||
+        process.env.NEXT_PUBLIC_USERS_DATABASE_ID;
+
+      const upcomingCollection =
+        process.env.UPCOMING_APPOINTMENTS_COLLECTION_ID ||
+        process.env.NEXT_PUBLIC_UPCOMING_APPOINTMENTS_COLLECTION_ID;
+
+      const historyCollection =
+        process.env.APPOINTMENT_HISTORIES_COLLECTION_ID ||
+        process.env.NEXT_PUBLIC_APPOINTMENT_HISTORIES_COLLECTION_ID;
+
       try {
         // Create a "New Consultation" document in "upcoming-appointments" collection
-        const newUpcomingAppointmentRef = await addDoc(
-          upcomingAppointmentsRef,
+        databaseClient.createDocument(
+          databaseId,
+          upcomingCollection,
+          docId,
           appointmentDetails
         );
 
-        // Create a "New Consultation" document in "all-appointments" collection
-        const newAllAppointmentRef = await addDoc(
-          allAppointmentsRef,
+        // Create a "New Consultation" document in "appointment histories" collection
+        databaseClient.createDocument(
+          databaseId,
+          historyCollection,
+          docId,
           appointmentDetails
         );
 
         setShowConfirmation(true);
       } catch (error) {
-        alert(error.message);
+        console(error.message);
       }
     } else {
       // user is not signed in' redirect to the login page
-      alert("Oops! You're not logged in.");
+      message.error("Oops you're not logged in :(");
       router.push("/login");
+      return;
     }
   };
 

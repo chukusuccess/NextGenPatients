@@ -5,8 +5,6 @@ import Link from "next/link";
 import React, { useState, useEffect } from "react";
 import Button from "@/components/UI/Button";
 import Nav from "@/components/Nav";
-// import { auth, db } from "@/firebase/client";
-// import { collection, getDocs, doc, deleteDoc } from "firebase/firestore";
 import { useRouter } from "next/router";
 
 function Appointments() {
@@ -27,41 +25,10 @@ function Appointments() {
   const router = useRouter();
 
   const handleLoad = async () => {
-    // const user = auth.currentUser;
-
     // try {
-    //   if (user) {
-    //     const uid = user.uid;
-
-    //     const upcomingQuerySnapshot = await getDocs(
-    //       collection(db, "users", uid, "upcoming-appointments")
-    //     );
-    //     const upcomingAppointmentsData = upcomingQuerySnapshot.docs.map(
-    //       (doc) => ({ ...doc.data(), id: doc.id })
-    //     );
-
-    //     const allQuerySnapshot = await getDocs(
-    //       collection(db, "users", uid, "all-appointments")
-    //     );
-    //     const allAppointmentsData = allQuerySnapshot.docs.map((doc) => ({
-    //       ...doc.data(),
-    //       id: doc.id,
-    //     }));
-
-    //     if (upcoming) {
-    //       setArrayUsed(upcomingAppointmentsData);
-    //     } else if (history) {
-    //       setArrayUsed(allAppointmentsData);
-    //     }
-    //   } else {
-    //     alert("Oops! You're not logged in.");
-    //     router.push("/login");
-    //   }
     // } catch (error) {
-    //   console.log(error.message);
+    //
     // }
-
-    console.log("handle load");
   };
 
   useEffect(() => {
@@ -183,7 +150,7 @@ function Appointments() {
                           </div>
                           <div className="flex items-center justify-between w-full p-4">
                             <div className="flex items-center gap-2">
-                              <div className="relative w-20 xl:w-32 rounded-full overflow-hidden aspect-square">
+                              <div className="relative w-20 overflow-hidden rounded-full xl:w-32 aspect-square">
                                 <Image
                                   fill
                                   src={data.doc}
@@ -263,7 +230,7 @@ function Appointments() {
 
             <div className="flex flex-col items-center justify-between w-full p-4 pt-6">
               <div className="flex items-center w-full gap-2 pb-6">
-                <div className="relative w-32 aspect-square rounded-full overflow-hidden">
+                <div className="relative w-32 overflow-hidden rounded-full aspect-square">
                   <Image fill src={modalData.doc} alt="ProfilePic" />
                 </div>
                 <div>
