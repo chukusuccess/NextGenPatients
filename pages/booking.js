@@ -13,8 +13,10 @@ import {
   storageClient,
 } from "@/appWrite-client/settings.config";
 import { ID } from "appwrite";
+import { message } from "antd";
 
 function Booking() {
+  const [uId, setUId] = useState("");
   const [fname, setFname] = useState("");
   const [lname, setLname] = useState("");
   const [dob, setDob] = useState("");
@@ -38,6 +40,18 @@ function Booking() {
   const bucketID = process.env.BUCKET_ID || process.env.NEXT_PUBLIC_BUCKET_ID;
 
   useEffect(() => {
+    const userDetails = accountClient.get();
+    userDetails.then(
+      function (response) {
+        setUId(response.email);
+      },
+      function (error) {
+        message.error("Oops you're not logged in :(");
+        router.push("/login");
+        return;
+      }
+    );
+
     const storage = storageClient.listFiles(bucketID);
     storage.then(
       function (response) {
@@ -51,11 +65,9 @@ function Booking() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    const userDetails = await accountClient.get();
 
-    if (userDetails) {
+    if (uId) {
       // user is signed in, get their UID(email)
-      const uid = userDetails.email;
       const date = new Date();
 
       const day = String(date.getDate()).padStart(2, "0");
@@ -72,7 +84,7 @@ function Booking() {
       const docId = ID.unique();
 
       const appointmentDetails = {
-        identification: uid,
+        identification: uId,
         dateOfBooking: `${day}/${month}/${year}`,
         timeOfBooking: `${hours}:${minutes}:${seconds}`,
         firstName: fname,
@@ -84,45 +96,59 @@ function Booking() {
         hospital: hospital,
         department: department,
         specialist: specialist,
-        doc: randomPic,
+        docImg: randomPic,
         complaint: complaint,
         appointmentDate: appointmentDate,
         appointmentTime: appointmentTime,
         qrString: fname + lname + appointmentTime,
       };
 
-      const databaseId =
-        process.env.USERS_DATABASE_ID ||
-        process.env.NEXT_PUBLIC_USERS_DATABASE_ID;
-
-      const upcomingCollection =
-        process.env.UPCOMING_APPOINTMENTS_COLLECTION_ID ||
-        process.env.NEXT_PUBLIC_UPCOMING_APPOINTMENTS_COLLECTION_ID;
-
-      const historyCollection =
-        process.env.APPOINTMENT_HISTORIES_COLLECTION_ID ||
-        process.env.NEXT_PUBLIC_APPOINTMENT_HISTORIES_COLLECTION_ID;
-
       try {
+        const databaseId =
+          process.env.USERS_DATABASE_ID ||
+          process.env.NEXT_PUBLIC_USERS_DATABASE_ID;
+
+        const upcomingCollection =
+          process.env.UPCOMING_APPOINTMENTS_COLLECTION_ID ||
+          process.env.NEXT_PUBLIC_UPCOMING_APPOINTMENTS_COLLECTION_ID;
+
+        const historyCollection =
+          process.env.APPOINTMENT_HISTORIES_COLLECTION_ID ||
+          process.env.NEXT_PUBLIC_APPOINTMENT_HISTORIES_COLLECTION_ID;
+
         // Create a "New Consultation" document in "upcoming-appointments" collection
-        databaseClient.createDocument(
-          databaseId,
-          upcomingCollection,
-          docId,
-          appointmentDetails
-        );
+        databaseClient
+          .createDocument(
+            databaseId,
+            upcomingCollection,
+            docId,
+            appointmentDetails
+          )
+          .catch((error) => {
+            message.error("Appointment creation failed, please try again!", 3);
+            console.log(error.message);
+            return;
+          });
 
         // Create a "New Consultation" document in "appointment histories" collection
-        databaseClient.createDocument(
-          databaseId,
-          historyCollection,
-          docId,
-          appointmentDetails
-        );
+        databaseClient
+          .createDocument(
+            databaseId,
+            historyCollection,
+            docId,
+            appointmentDetails
+          )
+          .catch((error) => {
+            message.error("Appointment creation failed, please try again!", 3);
+            console.log(error.message);
+            return;
+          });
 
         setShowConfirmation(true);
       } catch (error) {
-        console(error.message);
+        message.error("Appointment creation failed, please try again!", 3);
+        console.log(error.message);
+        return;
       }
     } else {
       // user is not signed in' redirect to the login page

@@ -49,7 +49,6 @@ function Specialists() {
           </div>
           <div className="flex flex-row items-center justify-center w-full">
             <Input
-              enterButton="Search"
               size="large"
               onChange={(e) => onSearch(e)}
               prefix={prefix}

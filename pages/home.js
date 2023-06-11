@@ -96,7 +96,7 @@ const Home = () => {
   return (
     <>
       <Head>
-        <title>Home | NEXTGEN Doctors</title>
+        <title>Home | NEXTGEN Patients</title>
         <meta
           name="description"
           content="Get Consultation from the comfort of your own home"
@@ -113,14 +113,8 @@ const Home = () => {
                 <span className="text-[#2A9988]">{", " + name}</span>
               </h1>
             </div>
+
             <div className="flex flex-row gap-5 lg:gap-5">
-              <img
-                src="/WalletIcon.svg"
-                alt="notification"
-                width={20}
-                height={20}
-                className="cursor-pointer"
-              />
               <Link href={"/appointments"} className="flex items-center">
                 <img
                   src="/Notification.svg"
@@ -130,12 +124,16 @@ const Home = () => {
                   className="cursor-pointer"
                 />
               </Link>
+
               <Link
                 href={"/editprofile"}
-                className="relative w-10 text-lg text-white rounded-full sm:w-6 aspect-square xl:hidden"
+                className="p-2 border rounded-full xl:hidden bg-[#2A9988]"
               >
-                <img src={"/user.png"} alt="closeMenu" />
+                <div className="relative w-6 sm:w-6 aspect-square">
+                  <Image fill src={"/user.svg"} alt="User profile" />
+                </div>
               </Link>
+
               <Link
                 href={"/editprofile"}
                 className="items-center gap-2 sm:px-16 px-5 text-sm py-2 text-white bg-[#2a9988] hover:bg-[#1C665B] duration-500 rounded-lg xl:flex hidden"
@@ -144,10 +142,11 @@ const Home = () => {
               </Link>
             </div>
           </div>
+
           <br />
+
           <div className="flex flex-row items-center justify-center w-full">
             <Input
-              enterButton="Search"
               size="large"
               onChange={(e) => onSearch(e)}
               prefix={prefix}
@@ -167,6 +166,7 @@ const Home = () => {
             >
               Find your Doctor
             </h1>
+
             <div className="grid grid-cols-4 text-black gap-x-2 gap-y-6 h-fit lg:grid-cols-6 md:gap-6 lg:gap-8 xl:gap-10 dark:text-white">
               {value.slice(0, 7).map((data) => {
                 return (
@@ -180,6 +180,7 @@ const Home = () => {
                   </Link>
                 );
               })}
+
               <div className="flex flex-col items-center justify-between pt-2">
                 <Link
                   href={"/specialists"}
@@ -192,19 +193,23 @@ const Home = () => {
             </div>
           </div>
         </div>
+
         <br />
+
         <div className="w-full flex flex-col items-start justify-center bg-[#2A9988] text-white px-4 overflow-auto grow">
           <div className="flex flex-row items-center justify-between w-full py-8 overflow-hidden">
             <h1 className="font-semibold md:text-2xl lg:text-4xl">
               Our Doctors
             </h1>
+
             <Link
               href={"/specialists"}
-              className="text-sm font-light cursor-pointer md:text-xl lg:text-xl"
+              className="text-sm font-light duration-300 cursor-pointer md:text-xl lg:text-xl hover:opacity-70"
             >
               view more
             </Link>
           </div>
+
           <div className="w-full overflow-auto">
             <div className="flex gap-5 pb-16 overflow-x-auto w-fit">
               {images &&

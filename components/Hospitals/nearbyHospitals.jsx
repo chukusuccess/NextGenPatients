@@ -84,7 +84,7 @@ export default function NearbyHospitals() {
         })
       ) : (
         <>
-          <div className="flex items-center justify-center w-full h-full gap-2 text-3xl backdrop-brightness-50">
+          <div className="flex items-center justify-center w-full h-full gap-2 text-3xl backdrop-brightness-50 dark:backdrop-brightness-100">
             <svg
               className="animate-spin aspect-square w-10 text-[#2A9988]"
               xmlns="http://www.w3.org/2000/svg"
