@@ -79,7 +79,10 @@ function Booking() {
       const seconds = date.getSeconds().toString().padStart(2, "0");
 
       const randomIndex = Math.floor(Math.random() * images.length);
-      const randomPic = images[randomIndex];
+      const randomPic = storageClient.getFilePreview(
+        bucketID,
+        images[randomIndex].$id
+      );
 
       const docId = ID.unique();
 
@@ -116,33 +119,21 @@ function Booking() {
           process.env.APPOINTMENT_HISTORIES_COLLECTION_ID ||
           process.env.NEXT_PUBLIC_APPOINTMENT_HISTORIES_COLLECTION_ID;
 
-        // Create a "New Consultation" document in "upcoming-appointments" collection
-        databaseClient
-          .createDocument(
-            databaseId,
-            upcomingCollection,
-            docId,
-            appointmentDetails
-          )
-          .catch((error) => {
-            message.error("Appointment creation failed, please try again!", 3);
-            console.log(error.message);
-            return;
-          });
+        await databaseClient.createDocument(
+          databaseId,
+          upcomingCollection,
+          docId,
+          appointmentDetails
+        );
 
-        // Create a "New Consultation" document in "appointment histories" collection
-        databaseClient
-          .createDocument(
-            databaseId,
-            historyCollection,
-            docId,
-            appointmentDetails
-          )
-          .catch((error) => {
-            message.error("Appointment creation failed, please try again!", 3);
-            console.log(error.message);
-            return;
-          });
+        await databaseClient.createDocument(
+          databaseId,
+          historyCollection,
+          docId,
+          appointmentDetails
+        );
+
+        message.success("Appointment successfully created!", 3);
 
         setShowConfirmation(true);
       } catch (error) {
