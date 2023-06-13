@@ -76,7 +76,7 @@ export const Ticket = ({
           </div>
           <div>
             <QRCode
-              errorLevel="L"
+              errorLevel="M"
               size={200}
               value={string}
               iconSize={200 / 6}
@@ -104,7 +104,6 @@ export const Ticket = ({
         <Button
           size="medium"
           style={{ padding: "5px 40px" }}
-          type="primary"
           onClick={downloadTicket}
           className="flex flex-row items-center w-1/2 text-white bg-teal-700 hover:bg-teal-800 active:bg-teal-800"
         >

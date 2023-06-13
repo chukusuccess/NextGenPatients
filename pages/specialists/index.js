@@ -49,12 +49,11 @@ function Specialists() {
           </div>
           <div className="flex flex-row items-center justify-center w-full">
             <Input
-              enterButton="Search"
               size="large"
               onChange={(e) => onSearch(e)}
               prefix={prefix}
               placeholder="Search for Doctors"
-              className="w-full px-4 text-xl border border-green-600 rounded-lg lg:w-2/3 md:w-2/3 sm:p-4 sm:px-4 searchDoc"
+              className="w-full px-4 text-lg border border-green-600 rounded-lg lg:w-2/3 md:w-2/3 sm:p-4 sm:px-4 searchDoc"
             />
           </div>
           <div className="w-full overflow-hidden scrollbar-hide">

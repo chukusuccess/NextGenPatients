@@ -41,18 +41,6 @@
       "profilePic": "/doc7.jpg",
       "name": "Dr. Ibrahim Adeleke",
       "degrees": "M.Sc., Ph.D., Dr."
-    },
-    {
-      "id": 8,
-      "profilePic": "/doc8.svg",
-      "name": "Dr. Joyce Oyebade",
-      "degrees": "M.Sc., Dr."
-    },
-    {
-      "id": 9,
-      "profilePic": "/doc9.svg",
-      "name": "Dr. Kemi Adetunji",
-      "degrees": "M.Sc., Ph.D."
     }
   ]
 }

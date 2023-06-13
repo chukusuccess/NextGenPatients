@@ -30,6 +30,7 @@ const HomeCarousel = ({ searchField }) => {
                 <Image
                   width={150}
                   height={250}
+                  priority
                   className="absolute bottom-0 right-0 z-10 overflow-visible"
                   src="/doctor.png"
                   alt="doctor"
@@ -58,6 +59,7 @@ const HomeCarousel = ({ searchField }) => {
                 <Image
                   width={175}
                   height={250}
+                  priority
                   className="absolute bottom-0 right-0 z-10 overflow-visible"
                   src="/doctorLg.png"
                   alt="doctor"
@@ -86,6 +88,7 @@ const HomeCarousel = ({ searchField }) => {
                 <Image
                   width={160}
                   height={250}
+                  priority
                   className="absolute bottom-0 right-0 z-10 overflow-visible"
                   src="/doctorWomanLg.png"
                   alt="doctor"
@@ -122,6 +125,7 @@ const HomeCarousel = ({ searchField }) => {
                 <Image
                   width={200}
                   height={200}
+                  priority
                   className="absolute bottom-0 right-0 z-10 overflow-visible"
                   src="/doctor.png"
                   alt="doctor"
@@ -152,6 +156,7 @@ const HomeCarousel = ({ searchField }) => {
                 <Image
                   width={260}
                   height={200}
+                  priority
                   className="absolute bottom-0 right-0 z-10 overflow-visible"
                   src="/doctorLg.png"
                   alt="doctor"
@@ -182,6 +187,7 @@ const HomeCarousel = ({ searchField }) => {
                 <Image
                   width={200}
                   height={200}
+                  priority
                   className="absolute bottom-0 right-0 z-10 overflow-visible"
                   src="/doctorWomanLg.png"
                   alt="doctor"
@@ -216,6 +222,7 @@ const HomeCarousel = ({ searchField }) => {
             <Image
               width={400}
               height={50}
+              priority
               className="absolute bottom-0 z-20 overflow-visible right-40"
               src="/doctorLg.png"
               alt="doctor"
@@ -223,6 +230,7 @@ const HomeCarousel = ({ searchField }) => {
             <Image
               width={300}
               height={50}
+              priority
               className="absolute bottom-0 right-0 z-10"
               src="/doctorWomanLg.png"
               alt="doctor"

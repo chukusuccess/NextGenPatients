@@ -1,15 +1,22 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import Nav from "@/components/Nav";
-import React, { useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { states } from "@/data/arrays";
 import specialistsDummy from "/data/specialistsDummyData.json";
 import doctorsDummy from "/data/doctorsDummyData.json";
 import Head from "next/head";
 import { Ticket } from "@/components/Ticket/Ticket";
 import { useRouter } from "next/router";
-// import { auth, db } from "@/firebase/client";
-// import { collection, addDoc } from "firebase/firestore";
+import {
+  accountClient,
+  databaseClient,
+  storageClient,
+} from "@/appWrite-client/settings.config";
+import { ID } from "appwrite";
+import { message } from "antd";
 
 function Booking() {
+  const [uId, setUId] = useState("");
   const [fname, setFname] = useState("");
   const [lname, setLname] = useState("");
   const [dob, setDob] = useState("");
@@ -23,19 +30,55 @@ function Booking() {
   const [complaint, setComplaint] = useState("");
   const [appointmentDate, setAppointmentDate] = useState("");
   const [appointmentTime, setAppointmentTime] = useState("");
+  const [images, setImages] = useState(null);
   const [showConfirmation, setShowConfirmation] = useState(false);
 
   const specialistsArray = specialistsDummy.specialists;
   const doctorsArray = doctorsDummy.doctors;
   const router = useRouter();
 
+  const databaseId =
+    process.env.USERS_DATABASE_ID || process.env.NEXT_PUBLIC_USERS_DATABASE_ID;
+
+  const upcomingCollection =
+    process.env.UPCOMING_APPOINTMENTS_COLLECTION_ID ||
+    process.env.NEXT_PUBLIC_UPCOMING_APPOINTMENTS_COLLECTION_ID;
+
+  const historyCollection =
+    process.env.APPOINTMENT_HISTORIES_COLLECTION_ID ||
+    process.env.NEXT_PUBLIC_APPOINTMENT_HISTORIES_COLLECTION_ID;
+
+  const bucketID = process.env.BUCKET_ID || process.env.NEXT_PUBLIC_BUCKET_ID;
+
+  useEffect(() => {
+    const userDetails = accountClient.get();
+    userDetails.then(
+      function (response) {
+        setUId(response.email);
+      },
+      function (error) {
+        message.error("Oops you're not logged in :(");
+        router.push("/login");
+        return;
+      }
+    );
+
+    const storage = storageClient.listFiles(bucketID);
+    storage.then(
+      function (response) {
+        setImages(response.files);
+      },
+      function (error) {
+        console.log(error);
+      }
+    );
+  }, []);
+
   const handleSubmit = async (event) => {
     event.preventDefault();
-    const user = auth?.currentUser;
 
-    if (user) {
-      // user is signed in, get their UID
-      const uid = user.uid;
+    if (uId) {
+      // user is signed in, get their UID(email)
       const date = new Date();
 
       const day = String(date.getDate()).padStart(2, "0");
@@ -46,36 +89,16 @@ function Booking() {
       const minutes = date.getMinutes().toString().padStart(2, "0");
       const seconds = date.getSeconds().toString().padStart(2, "0");
 
-      const docs = [
-        "/doc1.jpg",
-        "/doc2.jpg",
-        "/doc3.jpg",
-        "/doc4.jpg",
-        "/doc5.jpg",
-        "/doc6.jpg",
-        "/doc7.jpg",
-        "/doc8.svg",
-        "/doc9.svg",
-      ];
-      const randomIndex = Math.floor(Math.random() * docs.length);
-      const randomPic = docs[randomIndex];
-
-      // Create "upcoming-appointments" and "all-appointments" collections for the user
-      const upcomingAppointmentsRef = collection(
-        db,
-        "users",
-        uid,
-        "upcoming-appointments"
+      const randomIndex = Math.floor(Math.random() * images.length);
+      const randomPic = storageClient.getFilePreview(
+        bucketID,
+        images[randomIndex].$id
       );
 
-      const allAppointmentsRef = collection(
-        db,
-        "users",
-        uid,
-        "all-appointments"
-      );
+      const docId = ID.unique();
 
       const appointmentDetails = {
+        identification: uId,
         dateOfBooking: `${day}/${month}/${year}`,
         timeOfBooking: `${hours}:${minutes}:${seconds}`,
         firstName: fname,
@@ -87,7 +110,7 @@ function Booking() {
         hospital: hospital,
         department: department,
         specialist: specialist,
-        doc: randomPic,
+        docImg: randomPic,
         complaint: complaint,
         appointmentDate: appointmentDate,
         appointmentTime: appointmentTime,
@@ -95,26 +118,33 @@ function Booking() {
       };
 
       try {
-        // Create a "New Consultation" document in "upcoming-appointments" collection
-        const newUpcomingAppointmentRef = await addDoc(
-          upcomingAppointmentsRef,
+        await databaseClient.createDocument(
+          databaseId,
+          upcomingCollection,
+          docId,
           appointmentDetails
         );
 
-        // Create a "New Consultation" document in "all-appointments" collection
-        const newAllAppointmentRef = await addDoc(
-          allAppointmentsRef,
+        await databaseClient.createDocument(
+          databaseId,
+          historyCollection,
+          docId,
           appointmentDetails
         );
+
+        message.success("Appointment successfully created!", 3);
 
         setShowConfirmation(true);
       } catch (error) {
-        alert(error.message);
+        message.error("Appointment creation failed, please try again!", 3);
+        console.log(error.message);
+        return;
       }
     } else {
       // user is not signed in' redirect to the login page
-      alert("Oops! You're not logged in.");
+      message.error("Oops you're not logged in :(");
       router.push("/login");
+      return;
     }
   };
 
@@ -177,7 +207,7 @@ function Booking() {
                     Patients first name
                     <input
                       type="text"
-                      className="w-full h-12 pl-3 rounded min-w-[300px] mt-1"
+                      className="w-full h-12 pl-3 rounded min-w-[300px] mt-1 border border-black dark:border-0"
                       name="fname"
                       pattern="[A-Za-z]+"
                       minLength="3"
@@ -192,7 +222,7 @@ function Booking() {
                     Patients last name
                     <input
                       type="text"
-                      className="w-full h-12 pl-3 rounded min-w-[300px] mt-1"
+                      className="w-full h-12 pl-3 rounded min-w-[300px] mt-1 border border-black dark:border-0"
                       name="lname"
                       pattern="[A-Za-z]+"
                       minLength="3"
@@ -207,7 +237,7 @@ function Booking() {
                     Date of Birth
                     <input
                       type="date"
-                      className="w-full h-12 px-3 mt-1 rounded"
+                      className="w-full h-12 px-3 mt-1 rounded border border-black dark:border-0"
                       name="dob"
                       required
                       value={dob}
@@ -219,7 +249,7 @@ function Booking() {
                     Address
                     <input
                       type="text"
-                      className="w-full h-12 pl-3 mt-1 rounded"
+                      className="w-full h-12 pl-3 mt-1 rounded border border-black dark:border-0"
                       name="address"
                       minLength="2"
                       required
@@ -268,7 +298,7 @@ function Booking() {
                     State
                     <select
                       name="state"
-                      className="w-full h-12 px-3 mt-1 rounded outline-none"
+                      className="w-full h-12 px-3 mt-1 rounded outline-none border border-black dark:border-0"
                       required
                       value={state}
                       onChange={(e) => {
@@ -289,7 +319,7 @@ function Booking() {
                     Hospital
                     <select
                       name="hospital"
-                      className="w-full h-12 px-3 mt-1 rounded outline-none"
+                      className="w-full h-12 px-3 mt-1 rounded outline-none border border-black dark:border-0"
                       required
                       value={hospital}
                       onChange={(e) => setHospital(e.target.value)}
@@ -313,7 +343,7 @@ function Booking() {
                     Department
                     <select
                       name="department"
-                      className="w-full h-12 px-3 mt-1 rounded outline-none"
+                      className="w-full h-12 px-3 mt-1 rounded outline-none border border-black dark:border-0"
                       required
                       value={department}
                       onChange={(e) => setDepartment(e.target.value)}
@@ -331,7 +361,7 @@ function Booking() {
                     Specialist
                     <select
                       name="specialist"
-                      className="w-full h-12 px-3 mt-1 rounded outline-none"
+                      className="w-full h-12 px-3 mt-1 rounded outline-none border border-black dark:border-0"
                       required
                       value={specialist}
                       onChange={(e) => setSpecialist(e.target.value)}
@@ -354,7 +384,7 @@ function Booking() {
                   Complaint
                   <textarea
                     name="complaint"
-                    className="w-full p-3 mt-1 text-base rounded-lg outline-none"
+                    className="w-full p-3 mt-1 text-base rounded-lg outline-none border border-black dark:border-0"
                     maxLength={150}
                     rows={8}
                     cols={40}
@@ -370,7 +400,7 @@ function Booking() {
                   Appointment date
                   <input
                     type="date"
-                    className="w-full h-12 px-3 mt-1 rounded"
+                    className="w-full h-12 px-3 mt-1 rounded border border-black dark:border-0"
                     name="appointmentDate"
                     required
                     value={appointmentDate}
@@ -382,7 +412,7 @@ function Booking() {
                   Appointment time
                   <input
                     type="time"
-                    className="w-full h-12 px-3 mt-1 rounded"
+                    className="w-full h-12 px-3 mt-1 rounded border border-black dark:border-0"
                     name="appointmentTime"
                     required
                     value={appointmentTime}

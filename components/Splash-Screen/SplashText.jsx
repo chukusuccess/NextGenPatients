@@ -4,9 +4,7 @@ import { motion } from "framer-motion";
 function SplashText() {
   return (
     <motion.div
-      // Set initial opacity to 1
       initial={{ opacity: 1 }}
-      // Animate opacity to 0 with a duration of 0.4 seconds and a delay of 1 second
       animate={{
         opacity: 0,
         transition: { duration: 0.4, delay: 1 },

@@ -1,21 +1,29 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable @next/next/no-img-element */
 import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useState, useEffect } from "react";
 import Button from "@/components/UI/Button";
 import Nav from "@/components/Nav";
-// import { auth, db } from "@/firebase/client";
-// import { collection, getDocs, doc, deleteDoc } from "firebase/firestore";
 import { useRouter } from "next/router";
+import {
+  accountClient,
+  databaseClient,
+} from "@/appWrite-client/settings.config";
+import { Query } from "appwrite";
+import { message } from "antd";
+import { AnimatePresence, motion } from "framer-motion";
 
 function Appointments() {
+  const [uId, setUId] = useState("");
   const [upcoming, setUpcoming] = useState(true);
   const [history, setHistory] = useState(false);
+  const [upcomingArray, setUpcomingArray] = useState([]);
+  const [historyArray, setHistoryArray] = useState([]);
   const [arrayUsed, setArrayUsed] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [modalData, setModalData] = useState({
-    id: "",
     state: "",
     hospital: "",
     department: "",
@@ -26,47 +34,85 @@ function Appointments() {
   });
   const router = useRouter();
 
+  const databaseId =
+    process.env.USERS_DATABASE_ID || process.env.NEXT_PUBLIC_USERS_DATABASE_ID;
+
+  const upcomingCollection =
+    process.env.UPCOMING_APPOINTMENTS_COLLECTION_ID ||
+    process.env.NEXT_PUBLIC_UPCOMING_APPOINTMENTS_COLLECTION_ID;
+
+  const historyCollection =
+    process.env.APPOINTMENT_HISTORIES_COLLECTION_ID ||
+    process.env.NEXT_PUBLIC_APPOINTMENT_HISTORIES_COLLECTION_ID;
+
   const handleLoad = async () => {
-    // const user = auth.currentUser;
+    try {
+      const upcomingCollectionData = await databaseClient.listDocuments(
+        databaseId,
+        upcomingCollection,
+        [Query.equal("identification", uId)]
+      );
+      console.log(upcomingCollectionData);
+      setUpcomingArray(upcomingCollectionData.documents);
 
-    // try {
-    //   if (user) {
-    //     const uid = user.uid;
-
-    //     const upcomingQuerySnapshot = await getDocs(
-    //       collection(db, "users", uid, "upcoming-appointments")
-    //     );
-    //     const upcomingAppointmentsData = upcomingQuerySnapshot.docs.map(
-    //       (doc) => ({ ...doc.data(), id: doc.id })
-    //     );
-
-    //     const allQuerySnapshot = await getDocs(
-    //       collection(db, "users", uid, "all-appointments")
-    //     );
-    //     const allAppointmentsData = allQuerySnapshot.docs.map((doc) => ({
-    //       ...doc.data(),
-    //       id: doc.id,
-    //     }));
-
-    //     if (upcoming) {
-    //       setArrayUsed(upcomingAppointmentsData);
-    //     } else if (history) {
-    //       setArrayUsed(allAppointmentsData);
-    //     }
-    //   } else {
-    //     alert("Oops! You're not logged in.");
-    //     router.push("/login");
-    //   }
-    // } catch (error) {
-    //   console.log(error.message);
-    // }
-
-    console.log("handle load");
+      const historyCollectionData = await databaseClient.listDocuments(
+        databaseId,
+        historyCollection,
+        [Query.equal("identification", uId)]
+      );
+      console.log(historyCollectionData);
+      setHistoryArray(historyCollectionData.documents);
+    } catch (error) {
+      message.error("Error fetching appointments, please try again!", 3);
+      console.log(error.message);
+    }
   };
 
   useEffect(() => {
+    if (!uId) {
+      const userDetails = accountClient.get();
+      userDetails.then(
+        function (response) {
+          setUId(response.email);
+        },
+        function (error) {
+          message.error("Oops, you're not logged in :(");
+          router.push("/login");
+        }
+      );
+      return;
+    }
+
     handleLoad();
-  }, [upcoming, history]);
+  }, [uId]);
+
+  useEffect(() => {
+    if (upcoming) {
+      setArrayUsed(upcomingArray);
+    } else {
+      setArrayUsed(historyArray);
+    }
+  }, [upcoming, history, upcomingArray, historyArray]);
+
+  const handleCancel = (docId) => {
+    const confirmed = window.confirm(
+      "Are you sure you want to cancel this appointment?"
+    );
+    if (confirmed) {
+      cancelApp(docId);
+    }
+  };
+
+  const cancelApp = async (id) => {
+    try {
+      await databaseClient.deleteDocument(databaseId, upcomingCollection, id);
+      message.success("Appointment successfully cancelled!", 3);
+      handleLoad();
+    } catch (error) {
+      message.error("Error canceling appointment!");
+      console.log(error.message);
+    }
+  };
 
   const openModal = (dataToBeUsed) => {
     setModalData(dataToBeUsed);
@@ -77,36 +123,21 @@ function Appointments() {
     setShowModal(false);
   };
 
-  const cancelApp = async (id) => {
-    try {
-      const user = auth.currentUser;
-      if (user) {
-        const uid = user.uid;
-        const appointmentDocRef = doc(
-          db,
-          "users",
-          uid,
-          "upcoming-appointments",
-          id
-        );
-        await deleteDoc(appointmentDocRef);
-        handleLoad();
-      } else {
-        alert("Oops! You're not logged in.");
-        router.push("/login");
-      }
-    } catch (error) {
-      console.error("Error canceling appointment: ", error);
-    }
+  const container = {
+    visible: {
+      transition: {
+        delayChildren: 0.3,
+        staggerChildren: 0.2,
+      },
+    },
   };
 
-  const handleCancel = (idToBeDeleted) => {
-    const confirmed = window.confirm(
-      "Are you sure you want to cancel this appointment?"
-    );
-    if (confirmed) {
-      cancelApp(idToBeDeleted);
-    }
+  const item = {
+    hidden: { y: 20, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1,
+    },
   };
 
   return (
@@ -151,8 +182,10 @@ function Appointments() {
             </div>
 
             <div className="h-full">
-              <div className="relative h-full pt-10 pb-8 overflow-hidden scrollbar-hide">
-                <div
+              <div className="relative h-full pt-10 pb-8 overflow-hidden">
+                <motion.div
+                  variants={container}
+                  animate="visible"
                   className={`w-full h-full ${
                     arrayUsed.length == 0
                       ? "flex flex-col items-center justify-center gap-10"
@@ -160,11 +193,13 @@ function Appointments() {
                   } overflow-scroll scrollbar-hide`}
                 >
                   {arrayUsed.length > 0 ? (
-                    arrayUsed.map((data) => {
+                    arrayUsed.map((data, index) => {
                       return (
-                        <div
-                          className="flex h-fit flex-col mx-auto w-[95%] bg-[#FCFCFC] rounded-lg shadow-lg mb-8"
-                          key={data.id}
+                        <motion.div
+                          initial="hidden"
+                          variants={item}
+                          className="flex h-fit flex-col mx-auto w-[95%] bg-[#FCFCFC] rounded-lg shadow-lg mb-8 text-black"
+                          key={index}
                         >
                           <div className="flex items-center justify-between p-4 border-b">
                             <p className="text-sm xl:text-lg">
@@ -172,25 +207,23 @@ function Appointments() {
                                 " | " +
                                 data.appointmentTime}
                             </p>
+
                             {upcoming && (
                               <button
                                 className="px-3 py-1 text-red-500 border border-red-500 rounded-lg"
-                                onClick={() => handleCancel(data.id)}
+                                onClick={() => handleCancel(data.$id)}
                               >
                                 Cancel appointment
                               </button>
                             )}
                           </div>
+
                           <div className="flex items-center justify-between w-full p-4">
                             <div className="flex items-center gap-2">
-                              <div className="relative w-20 xl:w-32 rounded-full overflow-hidden aspect-square">
-                                <Image
-                                  fill
-                                  src={data.doc}
-                                  priority
-                                  alt="ProfilePic"
-                                />
+                              <div className="relative w-20 overflow-hidden rounded-full xl:w-32 aspect-square">
+                                <img src={data.docImg} alt="ProfilePic" />
                               </div>
+
                               <div>
                                 <h1 className="xl:text-2xl">
                                   {data.specialist}
@@ -200,6 +233,7 @@ function Appointments() {
                                 </p>
                               </div>
                             </div>
+
                             <button
                               className="px-3 py-1 text-white border bg-[#1C665B] rounded-lg"
                               onClick={() => openModal(data)}
@@ -207,7 +241,7 @@ function Appointments() {
                               View
                             </button>
                           </div>
-                        </div>
+                        </motion.div>
                       );
                     })
                   ) : (
@@ -215,6 +249,7 @@ function Appointments() {
                       <p className="dark:text-white md:text-xl">
                         No appointment(s) found
                       </p>
+
                       <div className="relative w-40 md:w-48 aspect-square">
                         <Image
                           src={"/emptyList.svg"}
@@ -234,63 +269,76 @@ function Appointments() {
                     </div>
                     Book an appointment
                   </Link>
-                </div>
+                </motion.div>
               </div>
             </div>
           </div>
         </div>
       </main>
 
-      {showModal && (
-        <div className="absolute top-0 flex items-center justify-center w-screen h-screen backdrop-brightness-[25%]">
-          <div
-            className="flex h-fit flex-col mx-auto w-[95%] max-w-md bg-[#FCFCFC] rounded-lg shadow-lg mb-8"
-            key={modalData.id}
+      <AnimatePresence>
+        {showModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{
+              opacity: 1,
+              transition: { duration: 0.1 },
+            }}
+            exit={{
+              opacity: 0,
+              transition: { duration: 0.1 },
+            }}
+            className="absolute top-0 flex items-center justify-center w-screen h-screen backdrop-brightness-[25%] text-black"
           >
-            <div className="flex items-center justify-between p-4 border-b">
-              <p className="text-lg">
-                {modalData.appointmentDate + " | " + modalData.appointmentTime}
-              </p>
+            <div className="flex h-fit flex-col mx-auto w-[95%] max-w-md bg-[#FCFCFC] rounded-lg shadow-lg mb-8">
+              <div className="flex items-center justify-between p-4 border-b">
+                <p className="text-lg">
+                  {modalData.appointmentDate +
+                    " | " +
+                    modalData.appointmentTime}
+                </p>
 
-              <button
-                title="Close modal"
-                onClick={() => closeModal()}
-                className="relative w-6 text-lg text-black aspect-square"
-              >
-                <Image fill src={"/closeCard.svg"} alt="closeMenu" />
-              </button>
-            </div>
-
-            <div className="flex flex-col items-center justify-between w-full p-4 pt-6">
-              <div className="flex items-center w-full gap-2 pb-6">
-                <div className="relative w-32 aspect-square rounded-full overflow-hidden">
-                  <Image fill src={modalData.doc} alt="ProfilePic" />
-                </div>
-                <div>
-                  <h1 className="text-2xl">{modalData.specialist}</h1>
-                  <p className="text-lg">{modalData.department}</p>
-                </div>
+                <button
+                  title="Close modal"
+                  onClick={() => closeModal()}
+                  className="relative w-6 text-lg text-black aspect-square"
+                >
+                  <Image fill src={"/closeCard.svg"} alt="closeMenu" />
+                </button>
               </div>
 
-              <hr className={`w-full`} />
+              <div className="flex flex-col items-center justify-between w-full p-4 pt-6">
+                <div className="flex items-center w-full gap-2 pb-6">
+                  <div className="relative w-32 overflow-hidden rounded-full aspect-square">
+                    <img src={modalData.docImg} alt="ProfilePic" />
+                  </div>
+                  <div>
+                    <h1 className="text-2xl">{modalData.specialist}</h1>
+                    <p className="text-lg">{modalData.department}</p>
+                  </div>
+                </div>
 
-              <div className="flex flex-col w-full gap-4 pt-6">
-                <p className="text-lg font-[600]">
-                  State: <span className="font-normal">{modalData.state}</span>
-                </p>
-                <p className="text-lg font-[600]">
-                  Hospital:{" "}
-                  <span className="font-normal">{modalData.hospital}</span>
-                </p>
-                <p className="text-lg font-[600]">
-                  Complaint: <br />
-                  <span className="font-normal">{modalData.complaint}</span>
-                </p>
+                <hr className={`w-full`} />
+
+                <div className="flex flex-col w-full gap-4 pt-6">
+                  <p className="text-lg font-[600]">
+                    State:{" "}
+                    <span className="font-normal">{modalData.state}</span>
+                  </p>
+                  <p className="text-lg font-[600]">
+                    Hospital:{" "}
+                    <span className="font-normal">{modalData.hospital}</span>
+                  </p>
+                  <p className="text-lg font-[600]">
+                    Complaint: <br />
+                    <span className="font-normal">{modalData.complaint}</span>
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
-        </div>
-      )}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 }
