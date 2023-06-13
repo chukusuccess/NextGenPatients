@@ -20,13 +20,14 @@ const Login = () => {
   const handleLogin = (e) => {
     e.preventDefault();
     setLoading(true);
-    setErrorMessage(""); 
+    setErrorMessage("");
 
     const promise = accountClient.createEmailSession(email, password);
 
     promise.then(
       function (response) {
         router.push("/home");
+        return response;
       },
       function (error) {
         console.log(error);

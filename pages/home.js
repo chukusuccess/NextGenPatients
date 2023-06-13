@@ -96,7 +96,7 @@ const Home = () => {
   return (
     <>
       <Head>
-        <title>Home | NEXTGEN Doctors</title>
+        <title>Home | NEXTGEN Patients</title>
         <meta
           name="description"
           content="Get Consultation from the comfort of your own home"
