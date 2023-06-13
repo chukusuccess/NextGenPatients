@@ -37,6 +37,17 @@ function Booking() {
   const doctorsArray = doctorsDummy.doctors;
   const router = useRouter();
 
+  const databaseId =
+    process.env.USERS_DATABASE_ID || process.env.NEXT_PUBLIC_USERS_DATABASE_ID;
+
+  const upcomingCollection =
+    process.env.UPCOMING_APPOINTMENTS_COLLECTION_ID ||
+    process.env.NEXT_PUBLIC_UPCOMING_APPOINTMENTS_COLLECTION_ID;
+
+  const historyCollection =
+    process.env.APPOINTMENT_HISTORIES_COLLECTION_ID ||
+    process.env.NEXT_PUBLIC_APPOINTMENT_HISTORIES_COLLECTION_ID;
+
   const bucketID = process.env.BUCKET_ID || process.env.NEXT_PUBLIC_BUCKET_ID;
 
   useEffect(() => {
@@ -107,18 +118,6 @@ function Booking() {
       };
 
       try {
-        const databaseId =
-          process.env.USERS_DATABASE_ID ||
-          process.env.NEXT_PUBLIC_USERS_DATABASE_ID;
-
-        const upcomingCollection =
-          process.env.UPCOMING_APPOINTMENTS_COLLECTION_ID ||
-          process.env.NEXT_PUBLIC_UPCOMING_APPOINTMENTS_COLLECTION_ID;
-
-        const historyCollection =
-          process.env.APPOINTMENT_HISTORIES_COLLECTION_ID ||
-          process.env.NEXT_PUBLIC_APPOINTMENT_HISTORIES_COLLECTION_ID;
-
         await databaseClient.createDocument(
           databaseId,
           upcomingCollection,
@@ -208,7 +207,7 @@ function Booking() {
                     Patients first name
                     <input
                       type="text"
-                      className="w-full h-12 pl-3 rounded min-w-[300px] mt-1"
+                      className="w-full h-12 pl-3 rounded min-w-[300px] mt-1 border border-black dark:border-0"
                       name="fname"
                       pattern="[A-Za-z]+"
                       minLength="3"
@@ -223,7 +222,7 @@ function Booking() {
                     Patients last name
                     <input
                       type="text"
-                      className="w-full h-12 pl-3 rounded min-w-[300px] mt-1"
+                      className="w-full h-12 pl-3 rounded min-w-[300px] mt-1 border border-black dark:border-0"
                       name="lname"
                       pattern="[A-Za-z]+"
                       minLength="3"
@@ -238,7 +237,7 @@ function Booking() {
                     Date of Birth
                     <input
                       type="date"
-                      className="w-full h-12 px-3 mt-1 rounded"
+                      className="w-full h-12 px-3 mt-1 rounded border border-black dark:border-0"
                       name="dob"
                       required
                       value={dob}
@@ -250,7 +249,7 @@ function Booking() {
                     Address
                     <input
                       type="text"
-                      className="w-full h-12 pl-3 mt-1 rounded"
+                      className="w-full h-12 pl-3 mt-1 rounded border border-black dark:border-0"
                       name="address"
                       minLength="2"
                       required
@@ -299,7 +298,7 @@ function Booking() {
                     State
                     <select
                       name="state"
-                      className="w-full h-12 px-3 mt-1 rounded outline-none"
+                      className="w-full h-12 px-3 mt-1 rounded outline-none border border-black dark:border-0"
                       required
                       value={state}
                       onChange={(e) => {
@@ -320,7 +319,7 @@ function Booking() {
                     Hospital
                     <select
                       name="hospital"
-                      className="w-full h-12 px-3 mt-1 rounded outline-none"
+                      className="w-full h-12 px-3 mt-1 rounded outline-none border border-black dark:border-0"
                       required
                       value={hospital}
                       onChange={(e) => setHospital(e.target.value)}
@@ -344,7 +343,7 @@ function Booking() {
                     Department
                     <select
                       name="department"
-                      className="w-full h-12 px-3 mt-1 rounded outline-none"
+                      className="w-full h-12 px-3 mt-1 rounded outline-none border border-black dark:border-0"
                       required
                       value={department}
                       onChange={(e) => setDepartment(e.target.value)}
@@ -362,7 +361,7 @@ function Booking() {
                     Specialist
                     <select
                       name="specialist"
-                      className="w-full h-12 px-3 mt-1 rounded outline-none"
+                      className="w-full h-12 px-3 mt-1 rounded outline-none border border-black dark:border-0"
                       required
                       value={specialist}
                       onChange={(e) => setSpecialist(e.target.value)}
@@ -385,7 +384,7 @@ function Booking() {
                   Complaint
                   <textarea
                     name="complaint"
-                    className="w-full p-3 mt-1 text-base rounded-lg outline-none"
+                    className="w-full p-3 mt-1 text-base rounded-lg outline-none border border-black dark:border-0"
                     maxLength={150}
                     rows={8}
                     cols={40}
@@ -401,7 +400,7 @@ function Booking() {
                   Appointment date
                   <input
                     type="date"
-                    className="w-full h-12 px-3 mt-1 rounded"
+                    className="w-full h-12 px-3 mt-1 rounded border border-black dark:border-0"
                     name="appointmentDate"
                     required
                     value={appointmentDate}
@@ -413,7 +412,7 @@ function Booking() {
                   Appointment time
                   <input
                     type="time"
-                    className="w-full h-12 px-3 mt-1 rounded"
+                    className="w-full h-12 px-3 mt-1 rounded border border-black dark:border-0"
                     name="appointmentTime"
                     required
                     value={appointmentTime}
