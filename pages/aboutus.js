@@ -20,7 +20,7 @@ function aboutus() {
         </h1>
 
         <div className="w-[90%] max-w-3xl mx-auto space-y-10">
-          <p className="first-letter:text-7xl first-letter:font-bold first-letter:text-white first-letter:mr-3 first-letter:float-left">
+          <p className="first-letter:text-7xl first-letter:font-bold first-letter:mr-3 first-letter:float-left">
             Welcome to NextGenPatients, the revolutionary open-source web
             application that aims to transform the healthcare sector. Our
             mission is to make healthcare accessible and convenient by enabling
