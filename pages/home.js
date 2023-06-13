@@ -213,7 +213,7 @@ const Home = () => {
           <div className="w-full overflow-auto">
             <div className="flex gap-5 pb-16 overflow-x-auto w-fit">
               {images &&
-                doctorsArray.slice(0, 7).map((data, index) => {
+                doctorsArray.map((data, index) => {
                   const imageURL = storageClient.getFilePreview(
                     bucketID,
                     images[index].$id
