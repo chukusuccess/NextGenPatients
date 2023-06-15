@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, { useEffect, useState } from "react";
 import {
   Tabs,
   Form,
@@ -9,12 +10,18 @@ import {
   Modal,
   Upload,
   message,
+  Select,
 } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import { states } from "@/data/arrays.js";
 import { useRouter } from "next/router";
 import Head from "next/head";
 import Image from "next/image";
+<<<<<<< HEAD
+=======
+import { accountClient } from "@/appWrite-client/settings.config";
+import countriesJson from "../data/countryCod.json";
+>>>>>>> 7f536769debc8f63cd6da4fdfba1cba35d65a563
 
 const getBase64 = (file) =>
   new Promise((resolve, reject) => {
@@ -101,15 +108,71 @@ const Documents = () => {
 };
 
 const Basic = () => {
-  const [fname, setFname] = useState("");
-  const [lname, setLname] = useState("");
+  const [uId, setUId] = useState();
+  const [name, setName] = useState("");
   const [gender, setGender] = useState("");
+  const [countryCode, setCountryCode] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
+  const [password, setPassword] = useState("");
   const [age, setAge] = useState("");
   const [location, setLocation] = useState([]);
+  const router = useRouter();
+  const countryPhoneCodes = countriesJson.countries;
+
+  useEffect(() => {
+    const userDetails = accountClient.get();
+    userDetails.then(
+      function (response) {
+        setUId(response.email);
+      },
+      function (error) {
+        message.error("Oops you're not logged in :(");
+        router.push("/login");
+        return;
+      }
+    );
+  }, []);
+
+  const handleReset = () => {
+    setUId();
+    setName("");
+    setGender("");
+    setCountryCode("");
+    setPhoneNumber("");
+    setPassword("");
+    setAge("");
+    setLocation([]);
+  };
 
   const handleSave = async () => {
-    console.log("handle save");
+    try {
+      const prefs = { location: location.join(", ") };
+
+      if (name.trim() !== "") {
+        accountClient.updateName(name);
+      }
+
+      if (gender) {
+        prefs.gender === gender;
+      }
+
+      if (phoneNumber.trim() !== "") {
+        const fullPhoneNumber = countryCode + phoneNumber;
+        accountClient.updatePhone(fullPhoneNumber, password);
+      }
+
+      if (age.trim() !== "") {
+        prefs.age === age;
+      }
+
+      await accountClient.updatePrefs(prefs);
+
+      message.success("Profile edited successfully!", 3);
+      handleReset();
+    } catch (error) {
+      message.error("Error editing profile");
+      console.log(error.message);
+    }
   };
 
   const handleAgeChange = (e) => {
@@ -129,20 +192,11 @@ const Basic = () => {
   return (
     <div className="w-full py-4 bg-white">
       <Form className="flex flex-col items-start justify-start w-full">
-        <Form.Item label="Change first name" className="w-full">
+        <Form.Item label="Change full name" className="w-full">
           <Input
             className="w-full h-12"
-            value={fname}
-            onChange={(e) => setFname(e.target.value)}
-            minLength={3}
-          />
-        </Form.Item>
-
-        <Form.Item label="Change last name" className="w-full">
-          <Input
-            className="w-full h-12"
-            value={lname}
-            onChange={(e) => setLname(e.target.value)}
+            value={name}
+            onChange={(e) => setName(e.target.value)}
             minLength={3}
           />
         </Form.Item>
@@ -157,16 +211,44 @@ const Basic = () => {
           </Radio.Group>
         </Form.Item>
 
-        <Form.Item label="Phone Number" className="w-full">
-          <Input
-            type="tel"
-            className="w-full h-12"
-            value={phoneNumber}
-            onChange={handleNumberChange}
-            minLength={13}
-            placeholder="08034360345"
-          />
-        </Form.Item>
+        <label label="Phone Number" className="w-full mb-6">
+          Phone no.
+          <div className="flex gap-2">
+            <select
+              onChange={(e) => setCountryCode(e.target.value)}
+              className="w-full basis-1/2 rounded-lg bg-transparent border px-2"
+            >
+              <option value="">Country code</option>
+
+              {countryPhoneCodes.map((code, index) => (
+                <option key={index} value={code.code}>
+                  {code.name + " (" + code.code + ")"}
+                </option>
+              ))}
+            </select>
+
+            <Input
+              type="tel"
+              className="w-full h-12"
+              value={phoneNumber}
+              onChange={handleNumberChange}
+              minLength={10}
+              placeholder="8034360345"
+            />
+          </div>
+        </label>
+
+        {phoneNumber && (
+          <Form.Item label="Your Password" className="w-full">
+            <Input
+              type="password"
+              className="w-full h-12"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              minLength={8}
+            />
+          </Form.Item>
+        )}
 
         <Form.Item label="Age" className="w-full">
           <Input
