@@ -15,8 +15,6 @@ import { states } from "@/data/arrays.js";
 import { useRouter } from "next/router";
 import Head from "next/head";
 import Image from "next/image";
-// import { auth, db } from "@/firebase/client";
-// import { doc, setDoc } from "firebase/firestore";
 
 const getBase64 = (file) =>
   new Promise((resolve, reject) => {
@@ -111,41 +109,6 @@ const Basic = () => {
   const [location, setLocation] = useState([]);
 
   const handleSave = async () => {
-    // const user = auth?.currentUser;
-    // try {
-    //   if (user) {
-    //     const uid = user.uid;
-    //     const data = {
-    //       gender: gender,
-    //       age: age,
-    //       location: location.join(", "),
-    //     };
-
-    //     if (fname.trim() !== "") {
-    //       data.firstname = fname;
-    //     }
-
-    //     if (lname.trim() !== "") {
-    //       data.lastname = lname;
-    //     }
-
-    //     if (phoneNumber.trim() !== "") {
-    //       data.phoneno = phoneNumber;
-    //     }
-
-    //     const documentRef = doc(db, "users", uid);
-
-    //     await setDoc(documentRef, data, { merge: true });
-
-    //     message.success("Profile edited successfully!");
-    //   } else {
-    //     // user is not signed in' redirect to the login page
-    //     alert("Oops! You're not logged in.");
-    //     router.push("/login");
-    //   }
-    // } catch (error) {
-    //   console.log(error.message);
-    // }
     console.log("handle save");
   };
 
